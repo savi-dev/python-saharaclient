@@ -55,6 +55,7 @@ class Client(object):
                                                 project_name=project_name)
             catalog = keystone.service_catalog.get_endpoints(service_type)
             if service_type in catalog:
+                entry = None
                 if region_name is None:
                     entry = catalog.get(service_type)[0]
                 else:
