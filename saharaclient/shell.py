@@ -307,12 +307,12 @@ class OpenStackSaharaShell(object):
                             help=argparse.SUPPRESS)
 
 # NA
-#        parser.add_argument('--os-region-name',
-#            metavar='<region-name>',
-#            default=utils.env('OS_REGION_NAME', 'SAHARA_REGION_NAME'),
-#            help='Defaults to env[OS_REGION_NAME].')
-#        parser.add_argument('--os_region_name',
-#            help=argparse.SUPPRESS)
+        parser.add_argument('--os-region-name',
+            metavar='<region-name>',
+            default=cliutils.env('OS_REGION_NAME', 'SAHARA_REGION_NAME'),
+            help='Defaults to env[OS_REGION_NAME].')
+        parser.add_argument('--os_region_name',
+            help=argparse.SUPPRESS)
 
         parser.add_argument('--os-auth-system',
                             metavar='<auth-system>',
@@ -569,11 +569,11 @@ class OpenStackSaharaShell(object):
         (os_username, os_tenant_name, os_tenant_id,
          os_auth_url, os_auth_system, endpoint_type,
          service_type, bypass_url, os_cache,
-         cacert) = \
+         cacert, os_region_name) = \
             (args.os_username, args.os_tenant_name, args.os_tenant_id,
              args.os_auth_url, args.os_auth_system, args.endpoint_type,
              args.service_type, args.bypass_url, args.os_cache,
-             args.os_cacert)
+             args.os_cacert, args.os_region_name)
 
         if os_auth_system and os_auth_system != "keystone":
             auth_plugin = nova_auth_plugin.load_plugin(os_auth_system)
@@ -689,7 +689,8 @@ class OpenStackSaharaShell(object):
                                 project_id=os_tenant_id,
                                 project_name=os_tenant_name,
                                 auth_url=os_auth_url,
-                                sahara_url=bypass_url)
+                                sahara_url=bypass_url,
+                                region_name=os_region_name)
 
         args.func(self.cs, args)
 

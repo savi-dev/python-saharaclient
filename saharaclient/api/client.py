@@ -33,7 +33,7 @@ class Client(object):
     def __init__(self, username=None, api_key=None, project_id=None,
                  project_name=None, auth_url=None, sahara_url=None,
                  endpoint_type='publicURL', service_type='data_processing',
-                 input_auth_token=None):
+                 input_auth_token=None, region_name=None):
 
         if not input_auth_token:
             keystone = self.get_keystone_client(username=username,
@@ -55,7 +55,17 @@ class Client(object):
                                                 project_name=project_name)
             catalog = keystone.service_catalog.get_endpoints(service_type)
             if service_type in catalog:
-                for e_type, endpoint in catalog.get(service_type)[0].items():
+                entry = None
+                if region_name is None:
+                    entry = catalog.get(service_type)[0]
+                else:
+                    for e in catalog.get(service_type):
+                        if e['region'] == region_name:
+                            entry = e
+                if entry is None:
+                    raise RuntimeError("Could not find Sahara endpoint in catalog")
+
+                for e_type, endpoint in entry.items():
                     if str(e_type).lower() == str(endpoint_type).lower():
                         sahara_catalog_url = endpoint
                         break
